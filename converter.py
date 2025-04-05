@@ -5,34 +5,35 @@ from tqdm import tqdm
 from argparse import ArgumentParser
 import dearpygui.dearpygui as dpg
 register_heif_opener()
-# Create window viewport Converter
+# Create window
 dpg.create_context()
-dpg.create_viewport(title='Converter', width=600, height=400)
-# Add GUI Components
 def main(params):
-    with dpg.window(label="Convert HEIC to JPEG", width=600, height=400):
+    # Add GUI Components 
+    with dpg.window(tag="Primary Window"): 
         dpg.add_text(tag="info", default_value="Place all HEIC files in the same folder as this program")
         dpg.add_button(label="Press to Convert", tag="convertbtn",callback=convertHEIC)
-        dpg.add_text(tag="startProcess", default_value="")
-        dpg.add_text(tag="endProcess", default_value="")
+        # TODO add a console output window but keeping it stupid simple for now. 
+        dpg.add_text(tag="startoutput", default_value="")
+        dpg.add_text(tag="endoutput", default_value="")
 
-
+# Define conversion function here. 
 def convertHEIC():
-    dpg.set_value(item="startProcess", value="Converting HEIC files to JPG")
+    dpg.set_value(item="startoutput", value="Converting HEIC files to JPG")
     files = list(Path(".").glob("*.heic")) + list(Path(".").glob("*.HEIC"))
-
+    # Check that we have files to convert
     if len(files) == 0:
-        dpg.set_value(item="endProcess", value="No HEIC files found")
+        dpg.set_value(item="endoutput", value="No HEIC files found")
         return
     else:
-        dpg.set_value(item="endProcess",value="Completed!")
-
+        dpg.set_value(item="endoutput",value="Completed!")
+    # Convert
     for f in tqdm(files):
         image = Image.open(str(f))
         image.convert('RGB').save(str(f.with_suffix('.jpg')))
         if params.delete:
             f.unlink()
 
+# TODO: Build handler to allow the option to toggle deletion of HEIC files on completion. 
 
 if __name__ == "__main__":
     parser = ArgumentParser()
@@ -41,8 +42,12 @@ if __name__ == "__main__":
     params = parser.parse_args()
     main(params)
 
+# Init dearpygui as a 600x200 window. 
+dpg.create_viewport(title='HEIC to JPEG Converter', width=600, height=200)
 dpg.setup_dearpygui()
 dpg.show_viewport()
+# Enable and set primary window to disable nested windows.
+dpg.set_primary_window("Primary Window", True)
 dpg.start_dearpygui()
 dpg.destroy_context()
 
