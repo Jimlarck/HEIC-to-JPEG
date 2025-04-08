@@ -4,15 +4,18 @@ from pillow_heif import register_heif_opener
 from tqdm import tqdm
 from argparse import ArgumentParser
 import dearpygui.dearpygui as dpg
+
 register_heif_opener()
+
 # Create window
 dpg.create_context()
+
 def main(params):
     # Add GUI Components 
     with dpg.window(tag="Primary Window"): 
         dpg.add_text(tag="info", default_value="Place all HEIC files in the same folder as this program")
-        dpg.add_button(label="Press to Convert", tag="convertbtn",callback=convertHEIC)
-        # TODO add a console output window but keeping it stupid simple for now. 
+        dpg.add_button(label="Press to Convert", tag="convertbtn", callback=convertHEIC)
+        dpg.add_checkbox(tag="delete_checkbox", label="Delete HEIC files after conversion", default_value=params.delete)
         dpg.add_text(tag="startoutput", default_value="")
         dpg.add_text(tag="endoutput", default_value="")
 
@@ -25,15 +28,13 @@ def convertHEIC():
         dpg.set_value(item="endoutput", value="No HEIC files found")
         return
     else:
-        dpg.set_value(item="endoutput",value="Completed!")
+        dpg.set_value(item="endoutput", value="Completed!")
     # Convert
     for f in tqdm(files):
         image = Image.open(str(f))
         image.convert('RGB').save(str(f.with_suffix('.jpg')))
-        if params.delete:
+        if dpg.get_value("delete_checkbox"):
             f.unlink()
-
-# TODO: Build handler to allow the option to toggle deletion of HEIC files on completion. 
 
 if __name__ == "__main__":
     parser = ArgumentParser()
@@ -50,4 +51,3 @@ dpg.show_viewport()
 dpg.set_primary_window("Primary Window", True)
 dpg.start_dearpygui()
 dpg.destroy_context()
-
