@@ -11,4 +11,4 @@ pillow_heif,
 tqdm
 
 # Preview 
-![Screenshot From 2025-04-08 01-10-53](https://github.com/user-attachments/assets/a7e2e8ea-2ebd-49af-9e32-815402bb3f4f)
+![image](https://github.com/user-attachments/assets/9614a87d-3a0f-4aa0-b1b2-8500c5f510f2)
